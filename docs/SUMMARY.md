@@ -1,0 +1,29 @@
+# Summary
+
+- [开始阅读](introduction.md)
+- [从 TypeScript 与 Rust 已知经验出发](from-typescript-and-rust.md)
+- [类型理论发展路线](history-roadmap.md)
+- 函数与规则地基
+  - [先学会读公式](notation.md)
+  - [Lambda 演算与简单类型](lambda-calculus.md)
+  - [类型系统的基本任务](type-system-basics.md)
+  - [和、积与代数数据类型](algebraic-data-types.md)
+  - [多态地图](polymorphism-map.md)
+  - [子类型与型变](subtyping-and-variance.md)
+- [Hindley–Milner 类型系统](hindley-milner.md)
+  - [替换、约束与合一](unification.md)
+  - [Algorithm W：从规则到算法](algorithm-w.md)
+- [双向类型检查](bidirectional-typing.md)
+- [HM 与双向系统怎样配合](hm-and-bidirectional.md)
+- 类型携带更多信息
+  - [System F：显式多态](system-f.md)
+  - [GADT 与存在类型](gadts-and-existentials.md)
+  - [精化类型](refinement-types.md)
+  - [依赖类型](dependent-types.md)
+- 动态、资源与效果
+  - [渐进类型](gradual-typing.md)
+  - [线性与仿射类型](linear-and-affine-types.md)
+  - [效果系统](effect-systems.md)
+- [实现一个小型类型检查器](implementation-guide.md)
+- [术语与符号速查](glossary.md)
+- [参考资料](references.md)

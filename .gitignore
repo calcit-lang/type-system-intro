@@ -1,0 +1,37 @@
+# dependencies
+/node_modules/
+/.pnp
+.pnp.*
+
+# test and coverage output
+/coverage/
+
+# framework and build output
+/dist/
+/.next/
+/.vinext/
+/out/
+/.wrangler/
+*.tsbuildinfo
+
+# local environment; keep the documented template trackable
+.env*
+!.env.example
+
+# local deployment/tool output
+.vercel/
+/outputs/
+/work/
+
+# generated framework declarations
+next-env.d.ts
+
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# editor and OS files
+.DS_Store
+**/.DS_Store
