@@ -1,0 +1,99 @@
+export type GlossaryEntry = {
+  id: string;
+  term: string;
+  english: string;
+  aliases: string[];
+  summary: string;
+  codeBridge: string;
+  caution: string;
+  related: string[];
+};
+
+export const glossaryEntries: GlossaryEntry[] = [
+  { id: 'judgment', term: '类型判断', english: 'typing judgment', aliases: ['类型判断', '判断式'], summary: '类型系统希望建立的一条形式化结论，例如“在环境 Γ 下，表达式 e 具有类型 A”。', codeBridge: '可以把它想成编译器内部一个成功返回的检查结果，但数学上它首先是一种关系。', caution: '判断式不是 TypeScript 的类型标注，也不是程序运行时执行的语句。', related: ['notation', 'type-system-basics'] },
+  { id: 'context', term: '上下文', english: 'context / environment', aliases: ['上下文', '类型环境'], summary: '当前推导可使用的假设，常写作 Γ。最基础版本记录变量及其类型。', codeBridge: '类似 IDE 在当前光标作用域里能看到的变量表。', caution: '高级算法上下文可能有顺序、存在变量和作用域标记，不一定只是 Map。', related: ['notation', 'bidirectional-typing'] },
+  { id: 'lambda-calculus', term: 'Lambda 演算', english: 'lambda calculus', aliases: ['lambda 演算', 'Lambda 演算'], summary: '只用变量、函数抽象和函数应用研究计算的极小语言。', codeBridge: '箭头函数 `x => x` 对应 λx.x。', caution: '“无类型 lambda 演算”中的无类型不是 JavaScript 的 `any`。', related: ['lambda-calculus'] },
+  { id: 'beta-reduction', term: 'Beta 归约', english: 'β-reduction', aliases: ['β-归约', 'beta 归约', 'Beta 归约'], summary: '把函数应用化简为避免变量捕获的替换，是 lambda 演算的核心计算步骤。', codeBridge: '`((x) => x)(42)` 化简成 `42`。', caution: '替换前必须处理绑定变量，不能让实参中的自由变量被意外捕获。', related: ['lambda-calculus'] },
+  { id: 'free-variable', term: '自由变量', english: 'free variable', aliases: ['自由变量', '自由程序变量'], summary: '在当前表达式或类型中没有被内部绑定器绑定的变量。', codeBridge: '函数 `x => x + y` 中，`x` 被参数绑定，`y` 来自外部。', caution: '自由程序变量 fv 与自由类型变量 ftv 处理的是不同语法层。', related: ['lambda-calculus', 'notation'] },
+  { id: 'bound-variable', term: '绑定变量', english: 'bound variable', aliases: ['绑定变量'], summary: '由 lambda、forall 等绑定结构引入，并只在其作用域内有效的变量。', codeBridge: '`function f<T>(x: T)` 中 `T` 和 `x` 分别在类型层和值层被绑定。', caution: '相同打印名字不代表同一身份；实现通常使用唯一 ID。', related: ['lambda-calculus', 'notation'] },
+  { id: 'type-variable', term: '类型变量', english: 'type variable', aliases: ['类型变量'], summary: '类型语法中的变量，可表示泛型参数，也可表示推断期间尚未求解的类型。', codeBridge: 'TypeScript/Rust 泛型中的 `T` 是最熟悉的例子。', caution: '全称变量、刚性变量和可求解元变量都可能打印成字母，但行为不同。', related: ['polymorphism-map', 'hindley-milner'] },
+  { id: 'substitution', term: '替换', english: 'substitution', aliases: ['类型替换', '替换'], summary: '把自由出现的变量系统地换成某个项或类型，同时遵守绑定作用域。', codeBridge: '像对 AST 做带作用域的重写，而不是简单字符串 replace。', caution: '替换组合有顺序，并且必须避免变量捕获。', related: ['lambda-calculus', 'unification'] },
+  { id: 'unification', term: '合一', english: 'unification', aliases: ['合一'], summary: '寻找一个替换，使两个含未知变量的类型变得相等。', codeBridge: '让 `a -> Int` 与 `Bool -> b` 相等，可解出 `a = Bool, b = Int`。', caution: '合一处理的是可求解变量；刚性变量不能为了通过检查而随意赋值。', related: ['unification', 'algorithm-w'] },
+  { id: 'occurs-check', term: '出现检查', english: 'occurs check', aliases: ['occurs check', '出现检查'], summary: '绑定类型变量前检查它是否出现在目标类型中，用来拒绝普通有限类型里的无限自引用。', codeBridge: '拒绝解出 `a = a -> b`，避免类型无限展开。', caution: '支持递归类型的系统会采用不同规则，不能照搬普通 HM 结论。', related: ['unification'] },
+  { id: 'scheme', term: '类型方案', english: 'type scheme', aliases: ['类型方案'], summary: 'HM 环境中保存的多态描述，通常形如 ∀a₁…aₙ. τ。', codeBridge: '`let id = x => x` 可保存为 `forall a. a -> a`。', caution: '类型方案与每次使用时得到的单型实例不是同一个对象。', related: ['hindley-milner'] },
+  { id: 'generalization', term: '泛化', english: 'generalization', aliases: ['泛化'], summary: '把不依赖外部环境的自由类型变量量化成类型方案。', codeBridge: '把 `a -> a` 提升为 `forall a. a -> a`。', caution: '不能量化环境仍依赖的变量；带效果语言还可能有值限制。', related: ['hindley-milner', 'algorithm-w'] },
+  { id: 'instantiation', term: '实例化', english: 'instantiation', aliases: ['实例化'], summary: '使用多态方案时，把量化变量换成一组新鲜变量。', codeBridge: '同一个 `id` 在两次调用中可分别得到 `Int -> Int` 与 `Bool -> Bool`。', caution: '每次使用必须 fresh，不能让两次调用共享同一个待解变量。', related: ['hindley-milner', 'algorithm-w'] },
+  { id: 'principal-type', term: '主类型', english: 'principal type', aliases: ['主类型'], summary: '一个表达式最一般的类型，其他合法类型可以通过实例化它得到。', codeBridge: '`x => x` 的 `forall a. a -> a` 比 `Int -> Int` 更一般。', caution: '主类型不是继承层次的顶类型，也不是运行时最常见类型。', related: ['hindley-milner'] },
+  { id: 'soundness', term: '健全性', english: 'soundness', aliases: ['健全性', '健全'], summary: '算法给出的结果不会超出声明式规格允许的范围；在另一语境中也可指类型安全性质。', codeBridge: '检查器说“可以”时，它的承诺确实成立。', caution: '先看论文究竟在证明算法健全，还是语言的类型安全。', related: ['type-system-basics'] },
+  { id: 'completeness', term: '完备性', english: 'completeness', aliases: ['完备性', '完备'], summary: '声明式规格允许的程序不会因为算法搜索太弱而被漏掉。', codeBridge: '规则上存在合法推导时，算法也能找到对应结果。', caution: '正式结论通常还带“在实例化或子类型意义下对应”等条件。', related: ['type-system-basics', 'algorithm-w'] },
+  { id: 'decidability', term: '可判定性', english: 'decidability', aliases: ['可判定性', '可判定'], summary: '存在一个对所有输入都会终止并给出是/否答案的算法。', codeBridge: '编译器不能因为遇到某段代码就永远搜索下去。', caution: '类型检查可判定，不代表完整类型推断也可判定。', related: ['type-system-basics', 'polymorphism-map'] },
+  { id: 'parametric-polymorphism', term: '参数多态', english: 'parametric polymorphism', aliases: ['参数多态'], summary: '同一实现对所有类型统一工作，不依赖具体类型的内部结构。', codeBridge: '`identity<T>(x: T): T` 是典型例子。', caution: '它不同于 trait/重载选择不同实现，也不同于子类型替代。', related: ['polymorphism-map', 'hindley-milner'] },
+  { id: 'ad-hoc-polymorphism', term: '特设多态', english: 'ad-hoc polymorphism', aliases: ['特设多态', 'ad-hoc polymorphism'], summary: '根据具体类型或约束选择不同实现的多态方式。', codeBridge: 'Rust trait method 与运算符重载属于这一问题家族。', caution: '不同语言的实例选择、一致性与动态派发规则差别很大。', related: ['polymorphism-map', 'from-typescript-and-rust'] },
+  { id: 'subtyping', term: '子类型', english: 'subtyping', aliases: ['子类型'], summary: '一种有方向的安全替代关系：需要 B 的位置可以使用 A，记作 A <: B。', codeBridge: 'TypeScript 中有额外字段的对象常能用于只要求较少字段的位置。', caution: '赋值兼容不总等于纯理论子类型；函数参数还涉及逆变。', related: ['subtyping-and-variance', 'polymorphism-map'] },
+  { id: 'variance', term: '型变', english: 'variance', aliases: ['协变', '逆变', '不变', '型变'], summary: '描述类型构造器在参数类型的子类型关系变化时，整体关系保持、翻转还是消失。', codeBridge: '函数返回值通常协变，函数参数通常逆变，可写容器常需要不变。', caution: '“不变”不是值不可变；它表示两种实例之间不建立子类型关系。', related: ['subtyping-and-variance'] },
+  { id: 'system-f', term: 'System F', english: 'polymorphic lambda calculus', aliases: ['System F', '系统 F'], summary: '带显式全称类型抽象与类型应用的二阶多态 lambda 演算。', codeBridge: '把泛型参数本身写进核心语言：Λa. λx:a. x。', caution: 'System F 的显式类型检查与省略类型后的完整推断具有不同边界。', related: ['polymorphism-map', 'history-roadmap'] },
+  { id: 'universal-quantification', term: '全称量化', english: 'universal quantification', aliases: ['全称量化', '全称类型', '类型抽象', '类型应用'], summary: '用 ∀α.A 表示对任意类型 α 都成立；System F 用 Λα.e 和 e[A] 显式引入、消去它。', codeBridge: '类似泛型函数声明 `<A>` 与显式调用 `f<number>(...)` 的核心语言版本。', caution: '要区分大写 Λ 的类型抽象、小写 λ 的值抽象以及两种应用。', related: ['system-f', 'polymorphism-map'] },
+  { id: 'type-erasure', term: '类型擦除', english: 'type erasure', aliases: ['类型擦除', '擦除语义'], summary: '在运行前删除只服务于静态检查的类型抽象、应用或标注。', codeBridge: '泛型源代码可在静态检查后运行同一份无类型参数代码。', caution: 'Rust 单态化、Java 擦除和理论擦除不是同一个具体编译策略。', related: ['system-f'] },
+  { id: 'parametricity', term: '参数性', english: 'parametricity', aliases: ['参数性', 'free theorem', '自由定理'], summary: '多态程序必须统一对待未知类型，因此仅从类型就能推出一部分行为约束。', codeBridge: '纯粹的 `forall A. A -> A` 正常返回时几乎只能返回输入。', caution: '结论依赖终止、纯度、反射与强制转换等前提。', related: ['system-f', 'polymorphism-map'] },
+  { id: 'elaboration', term: '细化翻译', english: 'elaboration', aliases: ['elaboration', '细化翻译'], summary: '把省略信息的表面语法检查并翻译成类型参数、证据和强制转换更显式的核心项。', codeBridge: '像编译器把泛型调用补成显式类型应用，把隐式 trait 参数补成字典。', caution: '它不是 refinement type 中“精化谓词”的同义词。', related: ['system-f', 'bidirectional-typing', 'dependent-types'] },
+  { id: 'rank', term: '类型的 Rank', english: 'rank of polymorphism', aliases: ['higher-rank', '高阶秩', 'rank-1', 'Rank-1'], summary: '粗略描述全称量词在函数参数左侧嵌套的深度。', codeBridge: '接收 `forall a. a -> a` 作为参数，就超出经典 HM 的普通 rank-1 使用方式。', caution: 'rank 不是函数参数数量，也不是泛型变量数量。', related: ['polymorphism-map', 'bidirectional-typing'] },
+  { id: 'bidirectional', term: '双向类型检查', english: 'bidirectional typing', aliases: ['双向类型检查', '双向类型推断'], summary: '把判断拆成“从表达式综合类型”和“按已知类型检查表达式”两个方向。', codeBridge: '变量适合查表得到类型；未标注 lambda 适合接受外层函数类型。', caution: '双向结构并不排斥局部合一，也不承诺所有位置自动推断。', related: ['bidirectional-typing', 'hm-and-bidirectional'] },
+  { id: 'synthesis', term: '综合', english: 'synthesis / inference mode', aliases: ['综合模式', '综合出', '综合'], summary: '输入环境与表达式，向外计算一个类型，常写作 Γ ⊢ e ⇒ A。', codeBridge: '变量名可直接从作用域查出类型。', caution: '“综合”比口语里的“推断”更精确，只指双向系统的一种方向。', related: ['bidirectional-typing'] },
+  { id: 'checking', term: '检查模式', english: 'checking mode', aliases: ['检查模式', '按期望类型检查'], summary: '输入环境、表达式和期望类型，只回答表达式是否符合，常写作 Γ ⊢ e ⇐ A。', codeBridge: '已知期望 `Int -> Int` 时，可把 `Int` 传入 lambda 参数。', caution: '如果实现总是先完整推断再比较，就没有真正利用向内信息流。', related: ['bidirectional-typing'] },
+  { id: 'rigid-variable', term: '刚性变量', english: 'rigid / skolem variable', aliases: ['刚性变量', 'Skolem 变量'], summary: '代表“任意但固定”的类型变量，不能为了让当前约束通过而被求解。', codeBridge: '检查 `forall a` 时，假设一个未知但固定的 `a`。', caution: '它和可求解元变量打印相似，却具有完全不同的权限。', related: ['bidirectional-typing'] },
+  { id: 'adt', term: '代数数据类型', english: 'algebraic data type', aliases: ['代数数据类型', 'ADT'], summary: '通过和类型、积类型与递归组合出的数据定义。', codeBridge: 'Rust `enum Option<T>` 与 TypeScript 判别联合是熟悉入口。', caution: '“代数”来自类型构造之间的和与积结构，不是指运行时数值代数。', related: ['algebraic-data-types', 'from-typescript-and-rust'] },
+  { id: 'gadt', term: 'GADT', english: 'generalized algebraic data type', aliases: ['GADT', '广义代数数据类型'], summary: '允许不同构造器返回类型族的不同索引，模式匹配时会引入局部类型等式。', codeBridge: '`Expr<number>` 的 Int 构造器与 `Expr<boolean>` 的 Bool 构造器能让求值结果随索引变化。', caution: 'GADT 增强的是构造器结果类型与分支精化，不只是 enum 多几个字段。', related: ['gadts-and-existentials', 'algebraic-data-types'] },
+  { id: 'existential-type', term: '存在类型', english: 'existential type', aliases: ['存在类型', '存在量化'], summary: '用 ∃α.A 表示生产者选择某个类型并隐藏具体选择，只暴露依赖它的操作。', codeBridge: '模块或闭包可以隐藏内部状态表示，只交付统一接口。', caution: '打开存在包后得到的是新鲜抽象类型，不能猜成某个具体类型或让它逃逸。', related: ['gadts-and-existentials', 'system-f'] },
+  { id: 'type-equality', term: '类型等式', english: 'type equality', aliases: ['类型等式', '局部等式', '定义相等', '命题相等'], summary: '说明两个类型可被视为相同；来源可以是归约、GADT 分支事实或显式证明。', codeBridge: '匹配 IntLit 后，分支内可知道结果索引 A 与 Int 相等。', caution: '局部等式不等于把刚性变量全局合一；定义相等也不同于显式等式证明。', related: ['gadts-and-existentials', 'dependent-types'] },
+  { id: 'sum-type', term: '和类型', english: 'sum type', aliases: ['和类型'], summary: '值来自若干分支之一，并保留自己来自哪个构造器的信息。', codeBridge: 'Rust enum 与 TypeScript 判别联合提供直接直觉。', caution: '这里的加号表示选择分支，不是运行时数字加法。', related: ['algebraic-data-types'] },
+  { id: 'product-type', term: '积类型', english: 'product type', aliases: ['积类型'], summary: '一个值同时包含多个组成部分，例如 tuple、record 或 struct。', codeBridge: '`{x: number, y: number}` 同时需要 x 与 y。', caution: '这里的乘号表示组合选择，不是运行时数字乘法。', related: ['algebraic-data-types'] },
+  { id: 'refinement-type', term: '精化类型', english: 'refinement type', aliases: ['精化类型', 'refinement type'], summary: '在基础类型上附加逻辑谓词，只接纳满足条件的值，常写作 {ν:B | p}。', codeBridge: '把 number 缩小为“非零整数”或“合法数组索引”。', caution: '自动检查依赖允许的逻辑片段；强谓词不代表都能自动推断。', related: ['refinement-types'] },
+  { id: 'smt-solver', term: 'SMT 求解器', english: 'SMT solver', aliases: ['SMT 求解器', 'SMT', '验证条件'], summary: '判断带背景理论的逻辑公式是否可满足，精化类型常用它证明子类型蕴含。', codeBridge: '要证明 P ⇒ Q，可询问 P ∧ ¬Q 是否不存在模型。', caution: 'unsat 可支持证明；sat 给出模型；unknown 不能当作成功。', related: ['refinement-types'] },
+  { id: 'dependent-type', term: '依赖类型', english: 'dependent type', aliases: ['依赖类型'], summary: '允许类型依赖值，从而在类型里表达长度、索引或更一般的不变量。', codeBridge: '可把向量长度写成 `Vector<A, n>`，让拼接结果长度是 `m + n`。', caution: 'TypeScript 条件类型或 Rust const generic 与完整依赖类型系统并不等同。', related: ['dependent-types', 'history-roadmap'] },
+  { id: 'pi-type', term: 'Π 类型', english: 'dependent function / Pi type', aliases: ['Π 类型', 'Pi 类型', '依赖函数类型'], summary: '返回类型可以引用参数值的函数类型，写作 Π(x:A).B(x)。', codeBridge: '函数接收长度 n，返回类型可以是 `Vec<A, n>`。', caution: '普通 A -> B 是 B 不使用 x 时的特例。', related: ['dependent-types'] },
+  { id: 'sigma-type', term: 'Σ 类型', english: 'dependent pair / Sigma type', aliases: ['Σ 类型', 'Sigma 类型', '依赖 pair', '依赖对'], summary: '第二部分的类型依赖第一部分值的 pair，写作 Σ(x:A).B(x)。', codeBridge: '把长度 n 与恰好长度为 n 的向量打包在一起。', caution: '它与存在量化相关，但是否隐藏第一部分取决于接口和消去规则。', related: ['dependent-types', 'gadts-and-existentials'] },
+  { id: 'universe', term: 'Universe', english: 'type universe', aliases: ['universe', 'Universe', '类型宇宙'], summary: '容纳类型的分层类型，例如 Type₀ : Type₁，用来组织“类型的类型”。', codeBridge: '可类比 kind 检查，但依赖理论中的 universe 还关联逻辑一致性。', caution: '直接采用 Type : Type 会在强系统中导致悖论，具体系统的层级规则各不相同。', related: ['dependent-types'] },
+  { id: 'gradual-typing', term: '渐进类型', english: 'gradual typing', aliases: ['渐进类型'], summary: '让静态与动态类型区域在同一程序中共存，并定义边界上的运行时检查。', codeBridge: 'TypeScript 从 JavaScript 逐步增加类型标注提供了直观动机。', caution: '“可选标注”只有配合明确静态/动态语义时才构成严格的渐进类型理论。', related: ['gradual-typing', 'history-roadmap', 'from-typescript-and-rust'] },
+  { id: 'dynamic-type', term: '动态未知类型', english: 'dynamic / unknown type', aliases: ['动态未知类型', '动态类型'], summary: '表示当前位置缺少静态精度，值跨回具体类型时需要运行时检查。', codeBridge: '与外部 JSON 或旧模块交界时，可以先保留未知，再通过 decoder 收紧。', caution: '它不是普通子类型的顶类型，也不自动等于 TypeScript 的 any 或 unknown。', related: ['gradual-typing'] },
+  { id: 'consistency', term: '类型一致性', english: 'type consistency', aliases: ['类型一致性', '一致性关系'], summary: '渐进系统中描述两个类型在未知信息下不冲突的关系，常写 A ~ B。', codeBridge: '`?` 与 `Int` 可以一致，因为未知值可在运行时接受检查。', caution: '一致性通常不传递，不能像相等关系那样做等价类闭包。', related: ['gradual-typing'] },
+  { id: 'precision', term: '精度关系', english: 'precision relation', aliases: ['精度关系'], summary: '比较两个渐进类型谁包含更多静态信息，例如动态未知不如 Int 精确。', codeBridge: '逐步把 unknown 边界替换成 User schema，就是增加静态精度。', caution: '不同论文可能把精度符号方向反过来，必须先读定义。', related: ['gradual-typing'] },
+  { id: 'cast', term: '运行时 Cast', english: 'runtime cast', aliases: ['cast calculus', '运行时 cast', '运行时 Cast', 'cast'], summary: '把 A 类型的值跨到 B 类型，并在需要时执行运行时检查的显式核心项。', codeBridge: '从动态 JSON 进入已验证 User 前运行 schema decoder，就是相似的边界。', caution: '高阶函数 cast 需要代理参数和返回值，不能只检查“这是函数”。', related: ['gradual-typing'] },
+  { id: 'blame', term: 'Blame', english: 'blame tracking', aliases: ['blame', 'Blame'], summary: '运行时边界检查失败时，记录并报告哪一侧违反了类型契约。', codeBridge: '类似 decoder 错误指出是外部响应不符合接口，而非内部调用代码本身。', caution: '高阶值会让责任沿正负位置翻转，不能只保存一个无方向位置。', related: ['gradual-typing', 'subtyping-and-variance'] },
+  { id: 'gradual-guarantee', term: '渐进保证', english: 'gradual guarantee', aliases: ['渐进保证'], summary: '形式化约束改变标注精度时，编译期接受关系和运行行为应怎样保持关联。', codeBridge: '删除部分精确标注不应凭空制造新的静态类型冲突。', caution: '它不承诺任意增删标注都完全不改变错误时机或性能。', related: ['gradual-typing'] },
+  { id: 'linear-type', term: '线性/仿射类型', english: 'linear / affine type', aliases: ['线性类型', '仿射类型', '线性/仿射类型'], summary: '在类型层追踪值被使用的次数，适合描述资源消费与所有权纪律。', codeBridge: 'Rust 所有权提供相关工程直觉，但不是某个最小线性演算的直接翻版。', caution: '线性表示恰好一次，仿射表示至多一次，两者不要混用。', related: ['linear-and-affine-types', 'history-roadmap', 'from-typescript-and-rust'] },
+  { id: 'weakening', term: 'Weakening', english: 'weakening structural rule', aliases: ['weakening', 'Weakening'], summary: '允许上下文多出一个没有被程序使用的假设，对应可以丢弃资源。', codeBridge: '声明变量后不使用，在普通语言里通常仍合法。', caution: '线性系统不对所有资源开放 weakening；仿射系统通常允许它。', related: ['linear-and-affine-types'] },
+  { id: 'contraction', term: 'Contraction', english: 'contraction structural rule', aliases: ['contraction', 'Contraction'], summary: '允许把两个同类型假设合并为一个可重复使用的假设，对应复制资源。', codeBridge: '同一个普通变量同时用于两个函数参数，隐含使用了复制能力。', caution: '线性和仿射资源通常都不允许无条件 contraction。', related: ['linear-and-affine-types'] },
+  { id: 'linear-arrow', term: '线性箭头', english: 'linear function arrow', aliases: ['线性箭头', '线性函数'], summary: 'A ⊸ B 表示消费一个 A 并产生一个 B 的函数，参数必须按资源纪律使用。', codeBridge: '取得 String 所有权的 Rust 函数提供相关调用直觉。', caution: '普通箭头与线性箭头的具体关系取决于演算和模态规则。', related: ['linear-and-affine-types'] },
+  { id: 'exponential', term: '指数模态', english: 'exponential modality', aliases: ['指数模态'], summary: '线性逻辑中的 !A 标记可受控复制或丢弃的资源。', codeBridge: 'Rust Copy trait 可帮助建立“复制需要许可”的直觉。', caution: '逻辑 !A 与 Rust Copy 不是同一个具体语言机制。', related: ['linear-and-affine-types'] },
+  { id: 'borrow', term: '借用', english: 'borrowing', aliases: ['借用', 'borrow checker'], summary: '暂时取得对已拥有值的访问权限，而不接管其所有权。', codeBridge: 'Rust 的 &T 共享借用和 &mut T 独占可变借用。', caution: '借用还追踪引用关系和生命周期，不能简化成单纯的使用次数。', related: ['linear-and-affine-types', 'from-typescript-and-rust'] },
+  { id: 'effect-system', term: '效果系统', english: 'effect system', aliases: ['效果系统'], summary: '除了值的输入输出类型，还静态描述函数可能执行的计算效果。', codeBridge: '可以区分纯函数、I/O、抛错、状态读写或异步操作。', caution: '效果系统、monad 与 algebraic effects 有联系，但不是同一个词的三种写法。', related: ['effect-systems', 'history-roadmap'] },
+  { id: 'latent-effect', term: '潜在效果', english: 'latent effect', aliases: ['潜在效果'], summary: '创建函数时不发生、但调用函数主体时可能发生的效果，常标在函数箭头上。', codeBridge: '定义一个打印回调是纯的；真正调用它时才执行 I/O。', caution: '闭包创建也可能读取或捕获状态，具体规则要看语言。', related: ['effect-systems'] },
+  { id: 'subeffecting', term: '子效果', english: 'subeffecting', aliases: ['subeffecting', '子效果'], summary: '允许效果较少的计算用于允许更多效果的位置，常以效果包含关系定义。', codeBridge: '纯回调可以传给“最多允许 I/O”的 API。', caution: '反方向不成立：要求纯的位置不能接收可能写状态的函数。', related: ['effect-systems'] },
+  { id: 'effect-polymorphism', term: '效果多态', english: 'effect polymorphism', aliases: ['效果多态'], summary: '对效果变量量化，使高阶函数精确保留回调本身的效果。', codeBridge: '纯回调传给 map 得到纯计算，打印回调则得到带 I/O 的计算。', caution: '效果变量与普通类型变量可能由不同 kind 和约束求解。', related: ['effect-systems', 'polymorphism-map'] },
+  { id: 'effect-row', term: '效果行', english: 'effect row', aliases: ['效果 row', 'effect row', '效果行'], summary: '用标签集合和开放尾变量描述“至少包含这些、还可能有其他效果”。', codeBridge: '中间件处理 Error 后，把未知的其他效果原样转发。', caution: '标签重复、顺序和 row 合一规则因系统而异。', related: ['effect-systems'] },
+  { id: 'algebraic-effect', term: 'Algebraic Effect', english: 'algebraic effect', aliases: ['algebraic effects', 'algebraic effect', 'Algebraic effect'], summary: '把计算效果表示为一组操作，并由外层 handler 提供局部解释。', codeBridge: '程序 perform Ask 请求配置，测试 handler 可以返回内存配置。', caution: '不是所有控制效果都在所有系统里满足同一代数条件。', related: ['effect-systems'] },
+  { id: 'effect-handler', term: '效果处理器', english: 'effect handler', aliases: ['效果处理器', 'effect handler'], summary: '截获效果操作，决定返回什么以及是否、何时恢复剩余计算。', codeBridge: '类似可局部替换的解释器或依赖注入边界。', caution: '它比普通异常 catch 更一般，continuation 的使用纪律必须由系统定义。', related: ['effect-systems'] },
+  { id: 'continuation', term: 'Continuation', english: 'continuation', aliases: ['continuation', 'Continuation'], summary: '程序在当前位置之后尚未执行的其余计算；效果 handler 可把它作为恢复函数使用。', codeBridge: '可粗略想成“拿到操作结果后从这里继续”的回调。', caution: '能否恢复零次、一次或多次会影响资源安全和控制语义。', related: ['effect-systems', 'linear-and-affine-types'] },
+  { id: 'region', term: 'Region', english: 'memory / effect region', aliases: ['region calculus', 'Region', '区域变量'], summary: '静态标识一组存储位置或效果作用区域，用于分析别名、状态和生命周期。', codeBridge: '两个写入不同 region 的计算可能安全并行。', caution: 'region 不一定对应运行时的一块连续内存。', related: ['effect-systems', 'linear-and-affine-types'] },
+  { id: 'value-restriction', term: '值限制', english: 'value restriction', aliases: ['值限制', 'value restriction'], summary: '带状态或效果的 ML 系语言限制 let 泛化，避免多态引用造成不健全。', codeBridge: '有分配效果的表达式不能总像纯函数值一样自由泛化。', caution: '各语言对“值”或“非扩张表达式”的精确定义不同。', related: ['effect-systems', 'hindley-milner'] },
+  { id: 'curry-howard', term: 'Curry–Howard 对应', english: 'Curry–Howard correspondence', aliases: ['Curry–Howard', 'Curry-Howard'], summary: '在相应系统中，命题对应类型、证明对应程序、证明化简对应程序求值。', codeBridge: '函数类型 A -> B 可读作“给出 A 的证据就能构造 B 的证据”。', caution: '它连接的是特定逻辑与特定演算，不是说任意工程类型都自动是数学定理。', related: ['lambda-calculus', 'history-roadmap'] },
+];
+
+export const glossaryById = new Map(glossaryEntries.map(entry => [entry.id, entry]));
+
+export const glossaryAliasToId = new Map<string, string>();
+for (const entry of glossaryEntries) {
+  for (const alias of entry.aliases) {
+    const key = alias.toLocaleLowerCase('zh-CN');
+    if (!glossaryAliasToId.has(key)) glossaryAliasToId.set(key, entry.id);
+  }
+}
+
+function escapeRegExp(source: string) {
+  return source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export const glossaryPattern = new RegExp(
+  `(${[...glossaryAliasToId.keys()].sort((a, b) => b.length - a.length).map(escapeRegExp).join('|')})`,
+  'gi',
+);
