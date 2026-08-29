@@ -130,17 +130,46 @@ Liquid Types 将 ML 类型推断与谓词抽象结合，在受限 qualifiers 中
 
 ## 效果系统与 Algebraic Effects
 
-### Lucassen 与 Gifford：Polymorphic Effect Systems
+### Gifford 与 Lucassen：Effect Systems；Lucassen 与 Gifford：Polymorphic Effect Systems
 
+- [1986 年早期工作条目](https://www.pls-lab.org/en/Effect_system)
+- [1988 POPL 论文（IBM Research）](https://research.ibm.com/publications/polymorphic-effect-systems)
 - [论文 PDF](https://cs.ioc.ee/ewscs/2010/mycroft/lucassen-popl88.pdf)
 
-论文将 type、effect 与 region 作为不同静态描述，讨论效果/区域多态和效果健全性。正文采用简化的 $A\;!\;\varepsilon$ 判断解释效果组合。
+这条路线把 type、effect 与 region 作为不同 kind 的描述，并把静态效果作为运行副作用的保守近似。阅读时特别留意：region 不是“内存地址的别名”，而是静态分析中用于表达可能访问区域的描述；效果多态也不只是给标签加泛型参数。
+
+### Eugenio Moggi：Notions of Computation and Monads
+
+- [作者论文页与 PDF](https://person.dibris.unige.it/moggi-eugenio/publications.html)
+- [书目条目](https://dblp.org/rec/journals/iandc/Moggi91.html)
+
+1991 年论文是理解“计算 monad”语义坐标的原始来源。它不等于后来的某个 Haskell 教程：先抓住值 $A$ 与计算 $M\ A$ 的区分，再回来看 `return`、`bind` 和程序等价为何需要额外结构。
+
+### Talpin 与 Jouvelot：The Type and Effect Discipline
+
+- [LICS 1992 论文页](https://lics.siglog.org/1992/TalpinJouvelot-Thetypeandeffectdis.html)
+
+该文把隐式多态、region、命令式构造和效果重建放在同一 discipline 中，并讨论 principal type/minimal effect。它是从 HM 的 `let` 泛化走向效果推断时很关键的一站；不要把它简化为“只要有副作用就一律拒绝泛化”。
 
 ### Plotkin 与 Pretnar：Handlers of Algebraic Effects
 
 - [爱丁堡大学论文 PDF](https://www.pure.ed.ac.uk/ws/portalfiles/portal/17909848/Plotkin_Pretnar_2009_Handlers_of_Algebraic_Effects.pdf)
 
 这项工作把异常处理器推广到可由代数理论描述的效果。正文只介绍 operation、continuation 与 handler 的程序员直觉，并明确区分 effect system、monad 和 algebraic effects。
+
+### Plotkin 与 Power；Bauer 与 Pretnar：操作、Handler 与 Eff
+
+- [Plotkin 与 Power：Algebraic Operations and Generic Effects（论文 PDF）](https://homepages.inf.ed.ac.uk/gdp/publications/alg_ops_gen_effects.pdf)
+- [Bauer 与 Pretnar：Programming with Algebraic Effects and Handlers（arXiv）](https://arxiv.org/abs/1203.1539)
+
+前者解释为什么某些计算效果可以由操作及其代数方程刻画；后者把这条想法落实到 Eff 语言。读到“algebraic”时，不必先背范畴论：先问操作的参数/结果是什么、handler 怎样使用 continuation、以及该效果是否允许所写的等式。
+
+### Daan Leijen：Koka 与 row-polymorphic effects
+
+- [论文 PDF（Microsoft Research）](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/koka-effects-2013.pdf)
+- [arXiv 版本](https://arxiv.org/abs/1406.2061)
+
+Koka 把 HM 风格推断、effect row 和 handler 放在同一可运行语言中。它的 duplicate labels、开放 row 与状态封装是具体设计选择；本教程使用集合式记法建立直觉时，不能把两者当成逐字相同的规则。
 
 ### Types and Programming Languages
 

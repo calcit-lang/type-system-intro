@@ -89,7 +89,7 @@ export const chapterGroups: ChapterGroup[] = [
     chapters: [
       { id: 'gradual-typing', number: '5.1', title: '渐进类型', eyebrow: 'STATIC / DYNAMIC', minutes: 46, level: '进阶', prerequisites: ['理解子类型、函数型变与双向检查'], goals: ['区分动态未知、顶类型与 any，并理解 cast、blame 和渐进保证'], content: gradualTyping },
       { id: 'linear-and-affine-types', number: '5.2', title: '线性与仿射类型', eyebrow: 'RESOURCE USAGE', minutes: 50, level: '进阶', prerequisites: ['理解上下文、函数规则与 Rust move/borrow'], goals: ['能读资源上下文规则，并区分线性、仿射、所有权与借用'], content: linearAndAffineTypes },
-      { id: 'effect-systems', number: '5.3', title: '效果系统', eyebrow: 'TYPE AND EFFECT', minutes: 54, level: '进阶', prerequisites: ['理解函数类型、HM 与高阶函数'], goals: ['能读 type-and-effect judgment，并理解效果组合、多态与 handler'], content: effectSystems },
+      { id: 'effect-systems', number: '5.3', title: '效果系统', eyebrow: 'TYPE AND EFFECT', minutes: 68, level: '进阶', prerequisites: ['理解函数类型、HM 与高阶函数'], goals: ['能读 type-and-effect judgment，并理解效果组合、多态与 handler', '能按静态摘要、monad 与 handler 三条路线定位效果研究论文'], content: effectSystems },
     ],
   },
   {
