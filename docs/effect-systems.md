@@ -21,6 +21,65 @@ $$
 
 却没有区分打印、随机性、状态、异常或异步。效果系统（effect system）把这类计算行为也放进静态判断。
 
+## 0. 研究脉络：Effects 不是一条单线演化史
+
+先给一个避免混淆的结论：研究文献里的 *effect* 至少有三条彼此交织、但问题不同的路线。
+
+| 路线 | 主要问题 | 常见记法 | 本章对应位置 |
+| --- | --- | --- | --- |
+| type-and-effect | 编译前能否保守地知道程序会做什么？ | $\Gamma\vdash e:A\;!\;\varepsilon$ | §1–10、§17–20 |
+| monadic semantics / monad | 怎样给带状态、异常、非确定性等计算一个统一的组合语义？ | $M\ A$、`bind` | §15 |
+| algebraic operations and handlers | 怎样把“请求操作”与“在何处解释它”解耦？ | $op:P\rightsquigarrow R$、`handle` | §11–13 |
+
+它们会互相借鉴，却不能相互替换。例如，`Promise<A>` 或 `M A` 可以编码某种计算；这并不自动给出一个能推断 effect row 的静态系统。反过来，语言也可以实现 handler，却暂时不保证所有操作都被静态处理。
+
+### 0.1 一条适合阅读论文的时间线
+
+| 时期 | 代表工作 | 新增的表达能力 | 对普通程序员最有用的理解 |
+| --- | --- | --- | --- |
+| 1986–1988 | Gifford、Lucassen，随后 Lucassen、Gifford 的多态效果系统 | 将 type、effect、region 作为不同 kind 的描述；把效果用于调度与并行分析 | 函数签名不只说“返回什么”，也可近似说“会碰到哪块状态” |
+| 1989–1991 | Moggi 的 computational $\lambda$-calculus 与 monad | 把“值”和“计算”分开，为状态、异常、非确定性等给出统一语义接口 | `Promise`、`Result`、`State` 这类包装不是随意技巧；它们有共同的组合结构 |
+| 1992 | Talpin、Jouvelot 的 type-and-effect discipline | 在隐式多态、region 和命令式构造共存时重建 principal type 与最小效果 | `let` 泛化必须看分配/状态，不能只看值类型 |
+| 2002–2009 | Plotkin、Power；Plotkin、Pretnar | 把效果写成操作签名，并把 exception handler 推广为一般 handler | 程序发出 `Ask`，解释策略可以在外层按环境替换 |
+| 2013–2014 | Eff、Koka 等 | 把用户定义 operation、handler、row-polymorphic effect 与推断放进可运行语言 | effect row 让高阶库不必把所有“其他效果”写死 |
+| 近年的工程化 | OCaml 5、Koka、Effekt 等不同设计 | handler、并发、一次/多次 continuation、优化与实际 API 设计相遇 | “有 handler”不等于“有静态 effect safety”；实现选择仍会影响错误发生时机和性能 |
+
+这张表不是“旧理论被新理论替代”的排行榜。研究常在不同目标之间取舍：并行调度关心 region；库抽象关心多态与 row；并发 runtime 关心 continuation 的表示和成本；API 设计关心用户是否能读懂签名。
+
+### 0.2 三条路线怎样在公式上分开
+
+**静态摘要**问“编译器证明了什么”。
+
+$$
+\Gamma\vdash e:A\;!\;\varepsilon
+$$
+
+这里的 $\varepsilon$ 是对运行行为的保守近似；它参与合一、泛化、子效果和健全性论证。
+
+**monad**问“计算怎样组合”。最小接口可写成：
+
+$$
+\mathrm{return}:A\to M\ A
+$$
+
+$$
+\mathrm{bind}:M\ A
+\to
+(A\to M\ B)
+\to
+M\ B
+$$
+
+它把“取得一个 $A$ 后继续做下一步计算”的控制流显式化。$M$ 是计算类型构造器；它不是本身就等于一个效果标签集合。
+
+**代数操作与 handler**问“谁来解释请求”。
+
+$$
+\mathrm{Ask}:\mathrm{Key}\rightsquigarrow\mathrm{String}
+$$
+
+操作签名先规定请求和恢复结果；handler 再决定请求是读真实环境、读测试字典、记录日志，还是根本不恢复。把这三层分开，读论文时就不会把 `perform`、`M A` 和 $\varepsilon$ 当作同一件事。
+
 ## 1. Type 与 effect 是两个维度
 
 一种判断式：
@@ -536,6 +595,105 @@ $$
 - 作用域标记。
 
 这再次说明“双向”是信息流骨架，不是只能处理简单无效果 lambda 演算的算法。
+
+### 19.1 从 HM 的类型方案扩展到 type-and-effect 方案
+
+在普通 HM 中，`let` 绑定常得到：
+
+$$
+\sigma=\forall\overline{\alpha}.A
+$$
+
+其中 $\overline{\alpha}$ 是被泛化的类型变量。加入效果变量后，一个教学化方案可以写成：
+
+$$
+\sigma=\forall\overline{\alpha},\overline{\varepsilon}.
+A\;!\;\varepsilon
+$$
+
+这里：
+
+- $\overline{\alpha}$：类型变量，例如 `map` 的元素类型；
+- $\overline{\varepsilon}$：效果或 effect-row 变量；
+- $A\;!\;\varepsilon$：这个表达式的值形状和行为摘要一起被量化。
+
+因此 `map` 的“回调是什么效果，结果就是什么效果”不是额外的口头约定，而是量化变量在签名中出现：
+
+$$
+\mathrm{map}:
+\forall A,B,\varepsilon.
+(A\xrightarrow{\varepsilon}B)
+\to
+\mathrm{List}\ A
+\xrightarrow{\varepsilon}
+\mathrm{List}\ B
+$$
+
+算法层仍像 Algorithm W 一样做三件事：实例化、生成约束、求解/合一；只是约束不再只有 $A\doteq B$，还会出现 effect row、region 或子效果约束。不同论文对“效果变量何时可泛化”有不同精确定义；遇到状态和分配时，必须同时检查 value restriction、region escape 或 effect masking 的前提，不能机械照搬 `generalize`。
+
+### 19.2 双向检查把“效果信息从哪里来”写清楚
+
+双向系统特别适合把标注边界和效果边界放在同一个公式里。设函数箭头带有潜在效果：
+
+$$
+A\xrightarrow{\varepsilon}B
+$$
+
+若外层已经期待这个函数类型，lambda 可以在检查模式获得参数类型和主体效果目标：
+
+$$
+\frac{
+  \Gamma,x:A\vdash e\Leftarrow B\;!\;\varepsilon
+}{
+  \Gamma\vdash
+  \lambda x.e
+  \Leftarrow
+  A\xrightarrow{\varepsilon}B
+  \;!\;\varnothing
+}
+$$
+
+逐项读：
+
+- 前提中的 $A$ 不是从未标注 `x` 猜出来，而是由期望箭头给出；
+- 前提中的 $\varepsilon$ 是函数被调用时允许主体产生的效果；
+- 结论的 $\varnothing$ 仍只说“此刻造出 lambda 值”是纯的；它没有抹去箭头上的 latent effect。
+
+综合模式则很适合变量、已标注表达式和应用：
+
+$$
+\frac{
+  \Gamma\vdash e_1
+  \Rightarrow
+  A\xrightarrow{\varepsilon_f}B
+  \;!\;\varepsilon_1
+  \qquad
+  \Gamma\vdash e_2
+  \Leftarrow
+  A
+  \;!\;\varepsilon_2
+}{
+  \Gamma\vdash e_1\ e_2
+  \Rightarrow
+  B
+  \;!\;
+  (\varepsilon_1\cup\varepsilon_2\cup\varepsilon_f)
+}
+$$
+
+这条规则与 §4 的应用规则相同的核心事实是：效果随求值顺序流动；双向化只是明确哪一部分由已知签名提供，哪一部分由子表达式综合出来。若系统允许 subeffecting，检查阶段还会有一个从实际效果到允许效果的桥：
+
+$$
+\frac{
+  \Gamma\vdash e\Rightarrow A\;!\;\varepsilon
+  \qquad
+  \varepsilon\subseteq\varepsilon_{\mathrm{allow}}
+}{
+  \Gamma\vdash e\Leftarrow A\;!\;\varepsilon_{\mathrm{allow}}
+}
+$$
+
+它的方向非常重要：一个实际纯的实现可满足“允许 I/O”的接口；一个实际会写状态的实现不能借由这条规则伪装成纯函数。
 
 ## 20. 什么时候效果值得进入类型
 

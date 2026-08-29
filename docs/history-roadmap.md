@@ -190,6 +190,10 @@ $$
 
 详见 [效果系统](effect-systems.md)：其中会展开潜在效果、效果组合、效果多态、row 与 algebraic handler。
 
+这条研究线并非只是在函数箭头旁多写一个标签。1980 年代的 type-and-effect 工作把 type、effect、region 都作为静态描述，用于保守分析状态访问和调度约束；Moggi 的 monad 语义则把“返回一个值”与“执行一个计算”分开；之后的 algebraic operations/handlers 把“请求什么操作”与“由哪一层解释”分开。近年的 row-polymorphic effect 系统尝试把这些行为摘要重新带回 HM 风格推断，让高阶库保留回调效果而不把未知效果写死。
+
+阅读现代语言特性时，先问它属于哪一层：`Result`/`Promise` 是把计算显式编码成值类型；effect row 是静态行为契约；`perform`/handler 是操作和解释机制。三者可以共存，不能互相等同。
+
 ## 13. 渐进类型：静态与动态代码怎样共存
 
 TypeScript 用户非常熟悉从动态 JavaScript 世界逐步增加标注。渐进类型理论研究：
