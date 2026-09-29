@@ -6,7 +6,7 @@ import { defineConfig } from 'vite';
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 
 export default defineConfig({
-  base: './',
+  base: process.env.VITE_BASE_URL ?? './',
   server: isCodexSeatbeltSandbox
     ? { watch: { useFsEvents: false, usePolling: true } }
     : undefined,

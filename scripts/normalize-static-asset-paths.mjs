@@ -17,7 +17,9 @@ for (const path of await htmlFiles(outputDirectory)) {
   const original = await readFile(path, 'utf8');
   const normalized = original
     .replaceAll('="/./', '="./')
-    .replaceAll("='/./", "='./");
+    .replaceAll("='/./", "='./")
+    .replaceAll('="/https://', '="https://')
+    .replaceAll("='/https://", "='https://");
 
   if (/\b(?:src|href)=["']\/(?!\/)/.test(normalized)) {
     throw new Error(`Absolute local asset reference remains in ${path}`);
